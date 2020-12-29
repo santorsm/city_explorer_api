@@ -11,34 +11,54 @@ app.use(cors());
 
 const PORT = process.env.PORT;
 
+// Routes
+app.get('/', homeHandler);
 app.get('/location', locationHandler);
-
+app.get('/weather', weatherHandler);
+app.use('*', errorHandler);
 
 // Function Handlers
-function locationHandler(request, response){
-  const geoData = require('./data/location.json');
-  const city = request.query.city;
-  const locationData = new Location(city, geoData);
-
-  // response.send(geoData);
-
-  response.send(locationData);
+function homeHandler (request, response){
+  response.send('Nosce te ipsum');
 }
 
-//Constructor
-function Location(city, formatted, lat, lon){
+function errorHandler(request, response){
+  response.status(500).send('Sorry, Something is rotten in the state of Denmark');
+}
+
+function locationHandler(request, response){
+  const locationInfo = require('./data/location.json');
+  const city = request.query.city;
+  const cityData = new Location(city, locationInfo);
+
+  response.send(cityData);
+}
+
+function weatherHandler (request, response){
+  const weatherData = require('./data/weather.json');
+  const weatherArray = [];
+  weatherData.data.forEach(dailyForecast => {
+    weatherArray.push(new Weather (dailyForecast));
+  });
+
+  response.send(weatherArray);
+}
+
+//Constructors
+function Location(city, locationInfo){
   this.search_query = city;
-  this.formatted_query = formatted;
-  this.latitude = lat;
-  this.longitude = lon;
+  this.formatted_query = locationInfo[0].display_name;
+  this.latitude = locationInfo[0].lat;
+  this.longitude = locationInfo[0].lon;
+}
+
+function Weather (data) {
+  this.forecast = data.weather.description;
+  let date = Date.parse(data.datetime);
+  this.time = new Date(date).toDateString();
 }
 
 //start our server
 app.listen(PORT, () => {
   console.log(`Now listening on port, ${PORT}`);
 });
-
-
-// app.use('*',(request, response) => {
-//   response.send('404. Sorry!');
-// });

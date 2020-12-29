@@ -32,10 +32,25 @@ Deployed basic express server to Heroku
 
 __Feature 02 - Locations__: User to enter the name of a location then can see data about the area of interest to me
 
-23 Dec 20 - Start:  End:
+23 Dec 20 - Start: 2000 End: 21000
 Application now has a fully-functional express server, with a GET route for the location resource.
 
-<!-- Use this area to document the iterative changes made to your application as each feature is successfully implemented. Use time stamps. Here's an examples:
+24 Dec 20 - Start: 1300 End: 1530
+Created location and location constructor function -inop
+
+__Feature 03 & 04 - Weather & Error__: User to enter the name of a location then can see data about the area of interest to me
+
+26 Dec 20 - Start: 1800 End: 1900
+Gave creating the Weather and waehter constructor function a go -inop
+
+26 Dec 20 - Start: 1900 End: 1930
+Created Error handling
 
 ## Credits and Collaborations
-<!-- Give credit (and a link) to other people or resources that helped you build this application. -->
+
+28 Dec 20 
+
+- relied upon code review to get my code working for location & weather
+- met with Dario Thornhill to review my code and get the instructions to get the API key
+
+- don't forget the **http://**!

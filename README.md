@@ -24,6 +24,8 @@ start writing routes to handle requests from the client
 
 ## Change Log
 
+### Lab-06
+
 __Feature 01 - Repository__:
 created data directory - containing `location.json` and `weather.json`
 `.env`, `.gitignore`, `README.md`, `.gitignore`, `.eslintrc.json`, `package.json`
@@ -45,6 +47,13 @@ Gave creating the Weather and waehter constructor function a go -inop
 
 26 Dec 20 - Start: 1900 End: 1930
 Created Error handling
+
+### Lab-07
+
+__Feature 01 - Location__:
+
+30 Dec 20 - Start: 2000 End: 2030
+Refactored `weatherHandler` to use `.map` in lieu of `forEach`
 
 ## Credits and Collaborations
 

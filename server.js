@@ -1,5 +1,7 @@
 'use strict';
 
+// https://codefellows.github.io/code-301-guide/curriculum/city-explorer-app/front-end/
+
 //bring in modules/dependencies
 require('dotenv').config();
 const express = require('express');
@@ -37,10 +39,13 @@ function locationHandler(request, response){
 function weatherHandler (request, response){
   const weatherData = require('./data/weather.json');
   const weatherArray = [];
-  weatherData.data.forEach(dailyForecast => {
+
+  // code refactored to replace forEach with .map
+
+  weatherData.data.map(dailyForecast => {
     weatherArray.push(new Weather (dailyForecast));
   });
-
+  console.log(weatherArray);
   response.send(weatherArray);
 }
 

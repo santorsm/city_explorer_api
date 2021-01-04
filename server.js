@@ -46,9 +46,6 @@ function locationHandler(request, response){
 
 }
 
-// function restaurantHandler
-
-
 function weatherHandler (request, response){
   const weatherData = require('./data/weather.json');
   const weatherArray = [];

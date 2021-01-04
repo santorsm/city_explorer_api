@@ -10,9 +10,8 @@ const superagent = require('superagent');
 
 //set up our application
 const app = express();
-app.use(cors());
-
 const PORT = process.env.PORT || 3000;
+app.use(cors());
 
 // Routes
 app.get('/', homeHandler);
@@ -39,12 +38,12 @@ function locationHandler(request, response){
 
   superagent.get(url)
     .then( data => {
-      console.log(data.body[0]);
+      const locationData  = data.body[0];
+      const cityData = new Location(city, locationData);
+      console.log(cityData);
+      response.status(200).send(cityData);
     });
 
-  const cityData = new Location(city, url);
-
-  response.send(cityData);
 }
 
 function weatherHandler (request, response){
@@ -63,9 +62,9 @@ function weatherHandler (request, response){
 //Constructors
 function Location(city, locationInfo){
   this.search_query = city;
-  this.formatted_query = locationInfo[0].display_name;
-  this.latitude = locationInfo[0].lat;
-  this.longitude = locationInfo[0].lon;
+  this.formatted_query = locationInfo.display_name;
+  this.latitude = locationInfo.lat;
+  this.longitude = locationInfo.lon;
 }
 
 function Weather (data) {

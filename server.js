@@ -34,7 +34,7 @@ function locationHandler(request, response){
   const key = process.env.GEOCODE_API_KEY;
   const url = `https://us1.locationiq.com/v1/search.php?key=${key}&q=${city}&format=json`;
 
-  console.log(url);
+  // console.log(url);
 
   superagent.get(url)
     .then( data => {
@@ -45,6 +45,9 @@ function locationHandler(request, response){
     });
 
 }
+
+// function restaurantHandler
+
 
 function weatherHandler (request, response){
   const weatherData = require('./data/weather.json');

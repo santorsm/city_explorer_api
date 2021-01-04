@@ -6,12 +6,13 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const superagent = require('superagent');
 
 //set up our application
 const app = express();
 app.use(cors());
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 
 // Routes
 app.get('/', homeHandler);
@@ -21,7 +22,7 @@ app.use('*', errorHandler);
 
 // Function Handlers
 function homeHandler (request, response){
-  response.send('Nosce te ipsum');
+  response.status(200).send('Nosce te ipsum');
 }
 
 function errorHandler(request, response){
@@ -29,9 +30,19 @@ function errorHandler(request, response){
 }
 
 function locationHandler(request, response){
-  const locationInfo = require('./data/location.json');
+  // const locationInfo = require('./data/location.json');
   const city = request.query.city;
-  const cityData = new Location(city, locationInfo);
+  const key = process.env.GEOCODE_API_KEY;
+  const url = `https://us1.locationiq.com/v1/search.php?key=${key}&q=${city}&format=json`;
+
+  console.log(url);
+
+  superagent.get(url)
+    .then( data => {
+      console.log(data.body[0]);
+    });
+
+  const cityData = new Location(city, url);
 
   response.send(cityData);
 }

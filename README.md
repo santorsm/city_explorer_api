@@ -20,7 +20,14 @@ tell the server to listen on the port
 start writing routes to handle requests from the client
 
 ## Architecture
-<!-- Provide a detailed description of the application design. What technologies (languages, libraries, etc) you're using, and any other relevant design information. -->
+
+Node.js
+dependencies used:
+    `cors`: 2.8.5
+    `dotenv`: 8.2.0
+    `express`: 4.17.1
+    `nodemon`: 2.0.6
+    `superagent`: 6.1.0
 
 ## Change Log
 
@@ -55,11 +62,26 @@ __Feature 01 - Location__:
 30 Dec 20 - Start: 2000 End: 2030
 Refactored `weatherHandler` to use `.map` in lieu of `forEach`
 
+30 Dec 20 - Start: 2100 End: 2300
+updated Location route to use data from the LocationIQ API
+
+__Feature 02 - Weather__:
+
+02 Jan 21 - Start: 1300 End: 1530
+updated Weather route to use data from the Weather Bit API
+
+04 Jan 21 - Start: 2030 End: 2130
+completed the update to Weather route, data from the Weather Bit API rendering
+
 ## Credits and Collaborations
 
-28 Dec 20 
+28 Dec 20
 
 - relied upon code review to get my code working for location & weather
 - met with Dario Thornhill to review my code and get the instructions to get the API key
 
 - don't forget the **http://**!
+
+04 Jan 21
+
+- benefitted from code review to get my `weatherData` variable to work and render the selected location's weather

@@ -47,17 +47,31 @@ function locationHandler(request, response){
 }
 
 function weatherHandler (request, response){
-  const weatherData = require('./data/weather.json');
-  const weatherArray = [];
+  // const weatherData = require('./data/weather.json');
+  // let lat = request.query.data.latitude;
+  // let long = request.query.data.longitude;
 
-  // code refactored to replace forEach with .map
+  const key = process.env.WEATHER_API_KEY;
+  const weatherUrl = `https://api.weatherbit.io/v2.0/forecast/daily?lat=${request.query.latitude}&lon=${request.query.longitude}&key=${key}&lang=en&units=I&days=8`;
 
-  weatherData.data.map(dailyForecast => {
-    weatherArray.push(new Weather (dailyForecast));
-  });
-  console.log(weatherArray);
-  response.send(weatherArray);
+  // const weatherArray = [];
+
+  let weatherData;
+
+  superagent.get(weatherUrl)
+    .then( data => {
+      // data.weather.description;
+      weatherData = data.body.data.map(dailyForecast => {
+        return new Weather (dailyForecast);
+      });
+      console.log(weatherData);
+      response.status(200).send(weatherData);
+
+    });
+
 }
+
+
 
 //Constructors
 function Location(city, locationInfo){

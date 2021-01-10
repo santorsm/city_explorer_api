@@ -1,6 +1,8 @@
 'use strict';
 
 // https://codefellows.github.io/code-301-guide/curriculum/city-explorer-app/front-end/
+// run nodemon locally  npx nodemon
+
 
 //bring in modules/dependencies
 require('dotenv').config();

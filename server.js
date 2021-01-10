@@ -3,60 +3,29 @@
 // https://codefellows.github.io/code-301-guide/curriculum/city-explorer-app/front-end/
 // run nodemon locally  npx nodemon
 
-
-//bring in modules/dependencies
+//Load Environment Variables from .env file
 require('dotenv').config();
+
+//application dependencies
 const express = require('express');
 const cors = require('cors');
 const superagent = require('superagent');
-const pg = require('pg');
 
-const client = new pg.Client(process.env.DATABASE_URL);
-
-//set up our application
-const PORT = process.env.PORT || 3000;
+//application set up
 const app = express();
+const PORT = process.env.PORT || 3000;
 app.use(cors());
 
+const locations = {};
 
-client.on('error', err => {
-  throw err;
-});
-
-// app.get('/',(request, response) => {
-//   response.status(200).send('Hello World');
-// });
-
-app.get('/add', (request, response) => {
-  let city = request.query.city;
-  let lat = request.query.latitude;
-  let lon = request.query.longitude;
-  let display = request.formatted_query;
-
-  let SQL = 'INSERT INTO location (city, lat, lon, display) VALUES ($1, $2, $3, $4) RETURNING *';
-
-  let safeValues = [city, lat, lon, display];
-
-  console.log(safeValues);
-
-  client.query(SQL, safeValues)
-    .then( results => {
-      response.status(200).json(results);
-    })
-    .catch(error => {
-      console.log(error);
-    });
-
-});
-
-
-// // Routes
+// Routes
 app.get('/', homeHandler);
 app.get('/location', locationHandler);
-// app.get('/weather', weatherHandler);
+app.get('/weather', weatherHandler);
+app.get('/movies', movieHandler);
 app.use('*', errorHandler);
 
-// // Function Handlers
+// Function Handlers
 function homeHandler (request, response){
   response.status(200).send('Nosce te ipsum');
 }
@@ -66,74 +35,112 @@ function errorHandler(request, response){
 }
 
 function locationHandler(request, response){
-  // const locationInfo = require('./data/location.json');
   const city = request.query.city;
   const key = process.env.GEOCODE_API_KEY;
   const url = `https://us1.locationiq.com/v1/search.php?key=${key}&q=${city}&format=json`;
-
+  const queryParams = {
+    key: process.env.GEOCODE_API_KEY,
+    q: city,
+    format: 'json',
+  };
   console.log(url);
 
+  //if data for city exists, do not get again api
+
+  if (locations[city]) {
+    response.send(locations[city]);
+  }
+  else {
+
+    const queryParams = {
+      key: process.env.GEOCODE_API_KEY,
+      q: city,
+      format: 'json',
+    };
+  }
   superagent.get(url)
+    .query(queryParams)
     .then( data => {
-      const locationData  = data.body[0];
+      const locationData  = data.body[0]; //first one ..
       const cityData = new Location(city, locationData);
+      locations[city] = cityData; //save for next time
       console.log(cityData);
       response.status(200).send(cityData);
+    })
+    .catch(() => {
+      console.log('ERROR');
+      response.status(500).send(`Something's not quite right.`);
     });
 
 }
 
-// function weatherHandler (request, response){
-//   // const weatherData = require('./data/weather.json');
-//   // let lat = request.query.data.latitude;
-//   // let long = request.query.data.longitude;
+function weatherHandler (request, response){
 
-//   const key = process.env.WEATHER_API_KEY;
-//   const weatherUrl = `https://api.weatherbit.io/v2.0/forecast/daily?lat=${request.query.latitude}&lon=${request.query.longitude}&key=${key}&lang=en&units=I&days=8`;
+  const key = process.env.WEATHER_API_KEY;
+  const weatherUrl = `https://api.weatherbit.io/v2.0/forecast/daily?lat=${request.query.latitude}&lon=${request.query.longitude}&key=${key}&lang=en&units=I&days=8`;
 
-//   // const weatherArray = [];
+  let weatherData;
 
-//   let weatherData;
+  superagent.get(weatherUrl)
+    .then( data => {
+      // data.weather.description;
+      weatherData = data.body.data.map(dailyForecast => {
+        return new Weather (dailyForecast);
+      });
+      console.log(weatherData);
+      response.status(200).send(weatherData);
 
-//   superagent.get(weatherUrl)
-//     .then( data => {
-//       // data.weather.description;
-//       weatherData = data.body.data.map(dailyForecast => {
-//         return new Weather (dailyForecast);
-//       });
-//       console.log(weatherData);
-//       response.status(200).send(weatherData);
+    });
 
-//     });
+}
 
-// }
+function movieHandler (request, response){
+  const key = process.env.MOVIE_API_KEY;
+  const moviePosterUrl = 'https://image.tmdb.org/t/p/w500';
+  const url = `https://api.themoviedb.org/3/search/movie?api_key=${key}`;
+  const queryParams = {
+    language: 'en-US',
+    query: request.query.search_query,
+    page: 1,
+    include_adult: false
+  };
 
-
+  superagent.get(url)
+    .query(queryParams)
+    .then(data => {
+      let movies = data.body.results.map(movie => new Movie(movie, moviePosterUrl));
+      response.status(200).send(movies);
+      console.log(movies);
+    })
+    .catch(error => errorHandler(request, response, error));
+}
 
 //Constructors
-function Location(city, locationData){
+function Location(city, locationInfo){
   this.search_query = city;
-  this.formatted_query = locationData.display_name;
-  this.latitude = locationData.lat;
-  this.longitude = locationData.lon;
+  this.formatted_query = locationInfo.display_name;
+  this.latitude = locationInfo.lat;
+  this.longitude = locationInfo.lon;
 }
 
-// function Weather (data) {
-//   this.forecast = data.weather.description;
-//   let date = Date.parse(data.datetime);
-//   this.time = new Date(date).toDateString();
-// }
+function Weather (data) {
+  this.forecast = data.weather.description;
+  let date = Date.parse(data.datetime);
+  this.time = new Date(date).toDateString();
+}
 
-// //start our server
-// app.listen(PORT, () => {
-//   console.log(`Now listening on port, ${PORT}`);
-// });
+function Movie(movie,moviePosterUrl) {
+  this.title = movie.title;
+  this.overview = movie.overview;
+  this.average_votes = movie.vote_average;
+  this.total_votes = movie.vote_count;
+  this.image_url = (movie.poster_path) ? `${moviePosterUrl}${movie.poster_path}` : undefined;
+  this.popularity = movie.popularity;
+  this.released_on = movie.release_date;
+}
 
-//start database
-client.connect()
-  .then( () =>{
-    app.listen(PORT, () => {
-      console.log(`Now listening on port, ${PORT}`);
-      console.log(`Connected to database, ${client.connectionParameters.database}`);
-    });
-  });
+//start our server
+app.listen(PORT, () => {
+  console.log(`Now listening on port, ${PORT}`);
+});
+

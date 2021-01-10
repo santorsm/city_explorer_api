@@ -23,6 +23,7 @@ app.get('/', homeHandler);
 app.get('/location', locationHandler);
 app.get('/weather', weatherHandler);
 app.get('/movies', movieHandler);
+app.get('/yelp', yelpHandler);
 app.use('*', errorHandler);
 
 // Function Handlers
@@ -115,6 +116,25 @@ function movieHandler (request, response){
     .catch(error => errorHandler(request, response, error));
 }
 
+function yelpHandler (request, response){
+  const url = 'https://api.yelp.com/v3/businesses/search';
+  const queryParams = {
+    term: 'restaurants',
+    latitude: request.query.latitude,
+    longitude: request.query.longitude,
+  };
+
+  superagent.get(url)
+    .auth(process.env.YELP_API_KEY, { type: 'bearer' })
+    .query(queryParams)
+    .then(data => {
+      let restaurants = data.body.businesses.map(yelpInfo => new Restaurant(yelpInfo));
+      response.status(200).send(restaurants);
+    })
+    .catch(error => errorHandler(request, response, error));
+}
+
+
 //Constructors
 function Location(city, locationInfo){
   this.search_query = city;
@@ -137,6 +157,14 @@ function Movie(movie,moviePosterUrl) {
   this.image_url = (movie.poster_path) ? `${moviePosterUrl}${movie.poster_path}` : undefined;
   this.popularity = movie.popularity;
   this.released_on = movie.release_date;
+}
+
+function Restaurant(yelpInfo) {
+  this.name = yelpInfo.name;
+  this.image_url = yelpInfo.image_url;
+  this.price = yelpInfo.price;
+  this.rating = yelpInfo.rating;
+  this.url = yelpInfo.url;
 }
 
 //start our server

@@ -73,6 +73,23 @@ updated Weather route to use data from the Weather Bit API
 04 Jan 21 - Start: 2030 End: 2130
 completed the update to Weather route, data from the Weather Bit API rendering
 
+### Lab-08
+
+__Feature 01 - Movie__:
+
+09 Jan 21 - Start: 1300 End: 1430
+completed the Movies route, data from the Movie API rendering
+
+__Feature 02 - Yelp__:
+
+09 Jan 21 - Start: 1500 End: 1700
+completed the Yelp route, data from the Yelp API rendering
+
+__Feature 03 - Pagination__:
+
+10 Jan 21 - Start: 1400 End: 1600
+completed the pagination update to Yelp route
+
 ## Credits and Collaborations
 
 28 Dec 20
@@ -85,3 +102,7 @@ completed the update to Weather route, data from the Weather Bit API rendering
 04 Jan 21
 
 - benefitted from code review to get my `weatherData` variable to work and render the selected location's weather
+
+09 & 10 Jan 21
+
+- Able to complete after following code reviews from class 08 and 09

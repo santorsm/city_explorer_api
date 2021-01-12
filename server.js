@@ -118,10 +118,14 @@ function movieHandler (request, response){
 
 function yelpHandler (request, response){
   const url = 'https://api.yelp.com/v3/businesses/search';
+  const resultsDisplayed = 5;
+  const page = request.query.page || 1;
   const queryParams = {
     term: 'restaurants',
     latitude: request.query.latitude,
     longitude: request.query.longitude,
+    limit: resultsDisplayed,
+    offset: ((page - 1) * resultsDisplayed + 1)
   };
 
   superagent.get(url)
